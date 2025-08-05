@@ -1,0 +1,25 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-900">
+    <div class="bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-md border border-cyan-500/30 animate-fadeIn">
+      <h2 class="text-3xl font-bold text-cyan-400 mb-6 text-center tracking-wider">Account Activation</h2>
+      
+      <div class="space-y-6">
+        <div class="text-gray-300 text-center">
+          {{ message }}
+        </div>
+  
+        <div *ngIf="error" class="text-red-400 text-center animate-pulse">
+          {{ error }}
+        </div>
+  
+        <div class="text-center">
+          <a 
+            [routerLink]="['/login']" 
+            class="text-cyan-400 hover:text-cyan-300 transition-all duration-300 ease-in-out underline text-sm"
+          >
+            Return to Login
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  

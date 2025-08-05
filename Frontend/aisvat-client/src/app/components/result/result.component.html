@@ -1,0 +1,107 @@
+<div class="w-full h-[90vh] flex items-start justify-center bg-gray-900 overflow-y-auto">
+  <div class="bg-gray-800 p-10 rounded-xl shadow-2xl w-full mx-4 sm:mx-6 md:mx-8 lg:mx-12 border border-teal-500/30 animate-fadeIn">
+    <h2 class="text-4xl font-bold text-teal-400 mb-8 text-center tracking-wider">Processing Results for {{ collectionName }}</h2>
+
+    <div *ngIf="error" class="text-red-400 text-center animate-pulse mb-8 text-lg">
+      {{ error }}
+    </div>
+
+    <div *ngIf="result" class="space-y-8">
+      <h3 class="text-2xl font-semibold text-teal-400 mb-4">Result</h3>
+      <p class="text-gray-200 mb-4 text-base">Status: {{ result.status }}</p>
+
+      <h4 class="text-xl font-medium text-teal-400 mb-3">Collections</h4>
+      <ul class="list-disc pl-6 text-gray-200 space-y-3">
+        <li *ngFor="let collection of result.collections" class="flex items-center">
+          <span class="truncate text-base">{{ collection }}</span>
+          <button 
+            [routerLink]="['/chat', collection]" 
+            class="ml-4 p-2 bg-teal-500 text-gray-900 font-semibold rounded-lg hover:bg-teal-600 transition-all duration-300 ease-in-out transform hover:scale-105"
+          >
+            Chat
+          </button>
+        </li>
+      </ul>
+
+      <h4 class="text-xl font-medium text-teal-400 mb-3">Vulnerabilities</h4>
+      <div class="overflow-x-auto">
+        <table class="w-full text-base text-gray-200 border border-gray-600 rounded-lg min-w-[800px]">
+          <thead class="bg-gray-700 text-teal-400">
+            <tr>
+              <th class="p-4 text-left font-semibold">Name</th>
+              <th class="p-4 text-left font-semibold">CVE ID</th>
+              <th class="p-4 text-left font-semibold">CWE ID</th>
+              <th class="p-4 text-left font-semibold">Description</th>
+              <th class="p-4 text-left font-semibold">Type</th>
+              <th class="p-4 text-left font-semibold">Severity</th>
+              <th class="p-4 text-left font-semibold">Risk</th>
+              <th class="p-4 text-left font-semibold">Fix</th>
+              <th class="p-4 text-left font-semibold">CVE URL</th>
+              <th class="p-4 text-left font-semibold">CWE URL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let vuln of result.vulnerabilities; let i = index" 
+                class="border-t border-gray-600 hover:bg-gray-700/50 transition-all duration-200"
+                [ngClass]="{'bg-gray-800': i % 2 === 0, 'bg-gray-750': i % 2 !== 0}">
+              <td class="p-4 whitespace-normal">{{ vuln.vulnerability_name }}</td>
+              <td class="p-4 whitespace-nowrap">{{ vuln.cve_id }}</td>
+              <td class="p-4 whitespace-nowrap">{{ vuln.cwe_id }}</td>
+              <td class="p-4 whitespace-normal max-w-sm">{{ vuln.description }}</td>
+              <td class="p-4 whitespace-nowrap">{{ vuln.type }}</td>
+              <td class="p-4 whitespace-nowrap">
+                <span class="px-3 py-1 rounded" 
+                      [ngClass]="{
+                        'bg-red-500/20 text-red-400': vuln.severity === 'High' || vuln.severity === 'Critical',
+                        'bg-yellow-500/20 text-yellow-400': vuln.severity === 'Medium',
+                        'bg-green-500/20 text-green-400': vuln.severity === 'Low'
+                      }">
+                  {{ vuln.severity }}
+                </span>
+              </td>
+              <td class="p-4 whitespace-nowrap">{{ vuln.risk }}</td>
+              <td class="p-4 whitespace-normal max-w-sm">{{ vuln.recommended_fix }}</td>
+              <td class="p-4">
+                <a 
+                  [href]="vuln.cve_url" 
+                  target="_blank" 
+                  class="text-teal-400 hover:text-teal-300 underline transition-all duration-300 truncate block max-w-[200px]"
+                >
+                  {{ vuln.cve_url }}
+                </a>
+              </td>
+              <td class="p-4">
+                <a 
+                  [href]="vuln.cwe_url" 
+                  target="_blank" 
+                  class="text-teal-400 hover:text-teal-300 underline transition-all duration-300 truncate block max-w-[200px]"
+                >
+                  {{ vuln.cwe_url }}
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="text-center mt-6">
+        <a 
+          [routerLink]="['/login']" 
+          class="text-teal-400 hover:text-teal-300 transition-all duration-300 ease-in-out underline text-base"
+        >
+          Return to Login
+        </a>
+      </div>
+    </div>
+
+    <div *ngIf="isLoading" class="flex items-center justify-center mt-8">
+      <div class="flex items-center space-x-3">
+        <svg class="animate-spin h-6 w-6 text-teal-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span class="text-teal-400 text-lg">Loading results...</span>
+      </div>
+    </div>
+  </div>
+</div>

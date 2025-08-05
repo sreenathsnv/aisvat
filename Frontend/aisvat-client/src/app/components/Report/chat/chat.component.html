@@ -1,0 +1,20 @@
+<h2>Chat for {{ collectionName }}</h2>
+<div>
+  <input type="text" [(ngModel)]="message" placeholder="Type your question">
+  <button (click)="sendMessage()">Send</button>
+</div>
+<div *ngIf="error">{{ error }}</div>
+<div>
+  <h3>Messages</h3>
+  <div *ngFor="let msg of messages">
+    <p><strong>Answer:</strong> {{ msg.message }}</p>
+    <div *ngIf="msg.sources && msg.sources.length">
+      <h4>Sources</h4>
+      <ul>
+        <li *ngFor="let source of msg.sources">
+          Page {{ source.page }}: {{ source.content }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

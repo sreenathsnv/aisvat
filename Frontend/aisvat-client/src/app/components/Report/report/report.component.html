@@ -1,0 +1,207 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-900">
+  <div class="bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-4xl border border-teal-500/30 animate-fadeIn h-[90vh] overflow-y-auto">
+    <h2 class="text-3xl font-bold text-teal-400 mb-6 text-center tracking-wider">Process Files</h2>
+
+    <div class="space-y-6">
+      <div class="relative">
+        <label class="block text-sm font-medium text-gray-300 mb-2">Upload Files</label>
+        <input 
+          type="file" 
+          multiple 
+          (change)="onFileChange($event)" 
+          class="w-full p-3 bg-gray-700 text-white rounded-lg border border-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-teal-500 file:text-gray-900 file:font-semibold hover:file:bg-teal-600 transition-all duration-300 ease-in-out"
+          [ngClass]="{'animate-shake': error}"
+        >
+      </div>
+
+      <div class="relative">
+        <label class="block text-sm font-medium text-gray-300 mb-2">Message</label>
+        <input 
+          type="text" 
+          [(ngModel)]="message" 
+          class="w-full p-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/50 transition-all duration-300 ease-in-out placeholder-gray-400"
+          placeholder="Enter your message"
+          [ngClass]="{'animate-shake': error}"
+        >
+      </div>
+
+      <div class="relative">
+        <button 
+          (click)="toggleAdvancedOptions()" 
+          class="w-full p-3 bg-gray-700 text-teal-400 font-semibold rounded-lg hover:bg-gray-600 transition-all duration-300 ease-in-out flex items-center justify-between"
+        >
+          <span>Advanced Options</span>
+          <svg class="w-5 h-5 transition-transform duration-300" [ngClass]="{'rotate-180': showAdvancedOptions}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div *ngIf="showAdvancedOptions" class="mt-4 space-y-6">
+          <div class="relative">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Chunk Size</label>
+            <input 
+              type="number" 
+              [(ngModel)]="chunkSize" 
+              class="w-full p-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/50 transition-all duration-300 ease-in-out"
+              placeholder="Enter chunk size (e.g., 600)"
+              [ngClass]="{'animate-shake': error}"
+            >
+          </div>
+
+          <div class="relative">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Chunk Overlap</label>
+            <input 
+              type="number" 
+              [(ngModel)]="chunkOverlap" 
+              class="w-full p-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/50 transition-all duration-300 ease-in-out"
+              placeholder="Enter chunk overlap (e.g., 40)"
+              [ngClass]="{'animate-shake': error}"
+            >
+          </div>
+
+          <div class="relative">
+            <label class="block text-sm font-medium text-gray-300 mb-2">LLM Temperature</label>
+            <input 
+              type="number" 
+              step="0.1" 
+              [(ngModel)]="llmTemperature" 
+              class="w-full p-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/50 transition-all duration-300 ease-in-out"
+              placeholder="Enter temperature (e.g., 0.7)"
+              [ngClass]="{'animate-shake': error}"
+            >
+          </div>
+
+          <div class="relative">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Max Tokens</label>
+            <input 
+              type="number" 
+              [(ngModel)]="maxTokens" 
+              class="w-full p-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/50 transition-all duration-300 ease-in-out"
+              placeholder="Enter max tokens (e.g., 1024)"
+              [ngClass]="{'animate-shake': error}"
+            >
+          </div>
+
+          <div class="relative">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Top K</label>
+            <input 
+              type="number" 
+              [(ngModel)]="topK" 
+              class="w-full p-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/50 transition-all duration-300 ease-in-out"
+              placeholder="Enter top K (e.g., 3)"
+              [ngClass]="{'animate-shake': error}"
+            >
+          </div>
+
+          <div class="relative">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Model Name</label>
+            <select 
+              [(ngModel)]="modelName" 
+              class="w-full p-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/50 transition-all duration-300 ease-in-out"
+              [ngClass]="{'animate-shake': error}"
+            >
+              <option *ngFor="let model of availableModels" [value]="model">{{ model }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button 
+          (click)="submit()" 
+          [disabled]="isLoading"
+          class="w-full p-3 bg-teal-500 text-gray-900 font-semibold rounded-lg hover:bg-teal-600 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 disabled:bg-teal-700 disabled:cursor-not-allowed flex items-center justify-center"
+        >
+          <span *ngIf="!isLoading">Process</span>
+          <div *ngIf="isLoading" class="flex items-center space-x-2">
+            <svg class="animate-spin h-5 w-5 text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Processing...</span>
+          </div>
+        </button>
+      </div>
+
+      <div *ngIf="error" class="text-red-400 text-center animate-pulse">
+        {{ error }}
+      </div>
+
+      <div *ngIf="result" class="mt-6">
+        <h3 class="text-xl font-semibold text-teal-400 mb-4">Result</h3>
+        <p class="text-gray-300 mb-4">Status: {{ result.status }}</p>
+        <h4 class="text-lg font-medium text-teal-400 mb-3">Collections</h4>
+        <ul class="list-disc pl-5 text-gray-300">
+          <li *ngFor="let collection of result.collections">
+            {{ collection }} 
+            <button 
+              (click)="navigateToChat(collection)" 
+              class="ml-2 p-1 bg-teal-500 text-gray-900 rounded hover:bg-teal-600"
+            >
+              Chat
+            </button>
+          </li>
+        </ul>
+        <h4 class="text-lg font-medium text-teal-400 mb-3">Vulnerabilities</h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-gray-300 border border-gray-600 rounded-lg min-w-[800px]">
+            <thead class="bg-gray-700 text-teal-400">
+              <tr>
+                <th class="p-3 text-left font-semibold">Name</th>
+                <th class="p-3 text-left font-semibold">CVE ID</th>
+                <th class="p-3 text-left font-semibold">CWE ID</th>
+                <th class="p-3 text-left font-semibold">Description</th>
+                <th class="p-3 text-left font-semibold">Type</th>
+                <th class="p-3 text-left font-semibold">Severity</th>
+                <th class="p-3 text-left font-semibold">Risk</th>
+                <th class="p-3 text-left font-semibold">Fix</th>
+                <th class="p-3 text-left font-semibold">CVE URL</th>
+                <th class="p-3 text-left font-semibold">CWE URL</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let vuln of result.vulnerabilities; let i = index" 
+                  class="border-t border-gray-600 hover:bg-gray-700/50 transition-all duration-200"
+                  [ngClass]="{'bg-gray-800': i % 2 === 0, 'bg-gray-750': i % 2 !== 0}">
+                <td class="p-3 whitespace-normal">{{ vuln.vulnerability_name }}</td>
+                <td class="p-3 whitespace-nowrap">{{ vuln.cve_id }}</td>
+                <td class="p-3 whitespace-nowrap">{{ vuln.cwe_id }}</td>
+                <td class="p-3 whitespace-normal max-w-xs">{{ vuln.description }}</td>
+                <td class="p-3 whitespace-nowrap">{{ vuln.type }}</td>
+                <td class="p-3 whitespace-nowrap">{{ vuln.severity }}</td>
+                <td class="p-3 whitespace-nowrap">{{ vuln.risk }}</td>
+                <td class="p-3 whitespace-normal max-w-xs">{{ vuln.recommended_fix }}</td>
+                <td class="p-3">
+                  <a 
+                    [href]="vuln.cve_url" 
+                    target="_blank" 
+                    class="text-teal-400 hover:text-teal-300 underline transition-all duration-300 truncate block max-w-[150px]"
+                  >
+                    {{ vuln.cve_url }}
+                  </a>
+                </td>
+                <td class="p-3">
+                  <a 
+                    [href]="vuln.cwe_url" 
+                    target="_blank" 
+                    class="text-teal-400 hover:text-teal-300 underline transition-all duration-300 truncate block max-w-[150px]"
+                  >
+                    {{ vuln.cwe_url }}
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <a 
+          [routerLink]="['/login']" 
+          class="text-teal-400 hover:text-teal-300 transition-all duration-300 ease-in-out underline text-sm"
+        >
+          Return to Login
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
